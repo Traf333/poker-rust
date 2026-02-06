@@ -25,23 +25,20 @@ impl Card {
 pub fn parse_cards(str: &str) -> Vec<Card> {
     str.split_whitespace()
         .map(|s| {
-            let card_chars = s.chars().into_iter().collect::<Vec<char>>();
-            let [value, suit, ..] = card_chars.as_slice() else {
-                panic!("Invalid card");
-            };
+            let (value, suite) = s.split_at(s.len() - 1);
             let v = match value {
-                'A' => ACE,
-                'K' => KING,
-                'Q' => QUEEN,
-                'J' => JACK,
-                _ => value.to_digit(10).unwrap() as u8,
+                "A" => ACE,
+                "K" => KING,
+                "Q" => QUEEN,
+                "J" => JACK,
+                _ => value.parse::<u8>().unwrap(),
             };
 
-            let s = match suit {
-                'H' => HEARTS,
-                'C' => CLUBS,
-                'S' => SPADES,
-                'D' => DIAMONDS,
+            let s = match suite {
+                "H" => HEARTS,
+                "C" => CLUBS,
+                "S" => SPADES,
+                "D" => DIAMONDS,
                 _ => panic!("Invalid suit"),
             };
             Card::new(v, s)
@@ -79,11 +76,17 @@ mod tests {
 
     #[test]
     fn test_parse_cards() {
-        let cards = parse_cards("2H AD 4S 5C 6H");
+        let cards = parse_cards("2H AD 10S 5C 6H");
         assert_eq!(cards.len(), 5);
         assert_eq!(cards[0].value, 2);
         assert_eq!(cards[0].suit, HEARTS);
         assert_eq!(cards[1].value, ACE);
         assert_eq!(cards[1].suit, DIAMONDS);
+        assert_eq!(cards[2].suit, SPADES);
+        assert_eq!(cards[2].value, 10);
+        assert_eq!(cards[3].suit, CLUBS);
+        assert_eq!(cards[3].value, 5);
+        assert_eq!(cards[4].suit, HEARTS);
+        assert_eq!(cards[4].value, 6);
     }
 }
