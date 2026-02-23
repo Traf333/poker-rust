@@ -20,13 +20,9 @@ pub enum Combination {
 }
 
 fn check_straight(cards: &[Card]) -> bool {
-    let mut uniq_reverse_numbers = vec![];
-    for card in cards.iter() {
-        if uniq_reverse_numbers.contains(&card.value) {
-            continue;
-        }
-        uniq_reverse_numbers.push(card.value);
-    }
+    let mut uniq_reverse_numbers = cards.iter().map(|card| card.value).collect::<Vec<u8>>();
+
+    uniq_reverse_numbers.dedup();
 
     if uniq_reverse_numbers.contains(&ACE) {
         uniq_reverse_numbers.push(1);
@@ -47,10 +43,6 @@ fn check_straight(cards: &[Card]) -> bool {
         }
     }
     false
-}
-
-fn check_flush(cards: &[Card]) -> bool {
-    cards.iter().all(|card| card.suit == cards[0].suit)
 }
 
 impl Combination {
@@ -90,7 +82,7 @@ impl Combination {
         if values.contains(&4) {
             return Self::FourOfKind;
         }
-        if values.contains(&3) && values.contains(&2) {
+        if (values.contains(&3) && values.contains(&2))  || values.iter().filter(|v| **v == 3).count() == 2{
             return Self::FullHouse;
         }
         if is_flush {
@@ -110,7 +102,7 @@ impl Combination {
             return Self::Pair;
         }
 
-        return Self::HighCard;
+        Self::HighCard
     }
 }
 #[cfg(test)]
@@ -145,6 +137,12 @@ mod tests {
     #[test]
     fn test_full_house() {
         let cards = parse_cards("JH JD JS QH QD 9H 8H");
+        assert_eq!(Combination::find(&cards), Combination::FullHouse);
+    }
+
+    #[test]
+    fn test_full_house_with_two_sets() {
+        let cards = parse_cards("JH JD JS QH QD QD 8H");
         assert_eq!(Combination::find(&cards), Combination::FullHouse);
     }
     #[test]
