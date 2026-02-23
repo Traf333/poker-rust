@@ -1,5 +1,6 @@
+use crate::Card;
+use crate::poker::{Combination, Hand};
 use crate::{ACE, CLUBS, DIAMONDS, HEARTS, JACK, KING, QUEEN, SPADES};
-use crate::{Card, Hand};
 use rand::rng;
 use rand::seq::SliceRandom;
 
@@ -25,6 +26,29 @@ impl Game {
             deck: Deck::new(),
             community_cards: Vec::new(),
         }
+    }
+
+    pub fn winners<'a>(&self, hands: &'a [Hand]) -> Vec<&'a Hand> {
+        let mut potential_winners: Vec<&Hand> = vec![];
+
+        for hand in hands {
+            if (potential_winners.is_empty()) {
+                potential_winners.push(hand);
+                continue;
+            }
+
+            if (hand.combination(&self.deck.cards)
+                > potential_winners[0].combination(&self.deck.cards))
+            {
+                potential_winners = vec![hand];
+            } else if (hand.combination(&self.deck.cards)
+                == potential_winners[0].combination(&self.deck.cards))
+            {
+                potential_winners.push(hand);
+            }
+        }
+
+        potential_winners
     }
 }
 

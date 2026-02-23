@@ -10,7 +10,7 @@ pub const KING: u8 = 13;
 pub const QUEEN: u8 = 12;
 pub const JACK: u8 = 11;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Copy)]
 pub struct Card {
     pub value: u8,
     pub suit: u8,
@@ -45,9 +45,6 @@ pub fn parse_cards(str: &str) -> Vec<Card> {
         })
         .collect()
 }
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct Hand(Card, Card);
 
 impl Display for Card {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
