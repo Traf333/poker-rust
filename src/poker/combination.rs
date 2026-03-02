@@ -63,8 +63,9 @@ impl Combination {
             is_flush = true;
 
             if check_straight(&same_suit_cards) {
-                if same_suit_cards.contains(&Card { value: ACE, suit })
-                    && same_suit_cards.contains(&Card { value: KING, suit })
+                if [ACE, KING, JACK, QUEEN].iter().all(|value| {
+                    same_suit_cards.contains(&Card { value: *value, suit })
+                })
                 {
                     return Self::RoyalFlush;
                 }
@@ -121,6 +122,12 @@ mod tests {
     #[test]
     fn test_straight_flush() {
         let cards = parse_cards("JH AD KH QH 10H 9H 8H");
+        assert_eq!(Combination::find(&cards), Combination::StraightFlush);
+    }
+
+    #[test]
+    fn test_straight_flush_with_king() {
+        let cards = parse_cards("AH KH 2H 3H 4H 5H QH");
         assert_eq!(Combination::find(&cards), Combination::StraightFlush);
     }
 
