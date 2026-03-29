@@ -10,7 +10,7 @@ pub const KING: u8 = 13;
 pub const QUEEN: u8 = 12;
 pub const JACK: u8 = 11;
 
-#[derive(Debug, Clone, PartialEq, Copy)]
+#[derive(Debug, Clone, PartialEq, Copy, Eq, PartialOrd, Ord)]
 pub struct Card {
     pub value: u8,
     pub suit: u8,

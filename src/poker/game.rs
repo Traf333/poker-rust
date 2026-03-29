@@ -36,16 +36,6 @@ impl Game {
                 potential_winners.push(hand);
                 continue;
             }
-
-            if (hand.combination(&self.deck.cards)
-                > potential_winners[0].combination(&self.deck.cards))
-            {
-                potential_winners = vec![hand];
-            } else if (hand.combination(&self.deck.cards)
-                == potential_winners[0].combination(&self.deck.cards))
-            {
-                potential_winners.push(hand);
-            }
         }
 
         potential_winners
