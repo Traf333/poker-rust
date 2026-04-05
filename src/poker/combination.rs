@@ -1,9 +1,6 @@
 use crate::poker::{ACE, CLUBS, Card, DIAMONDS, HEARTS, JACK, KING, QUEEN, SPADES};
+use std::fmt::Display;
 
-use std::{
-    collections::{HashMap, HashSet},
-    iter::FromIterator,
-};
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Combination {
@@ -103,6 +100,64 @@ impl Combination {
                 Combination::HighCard([*k1, *k2, *k3, *k4, *k5])
             }
             _ => unreachable!("Invalid hand"),
+        }
+    }
+}
+
+fn format_rank(r: u8) -> String {
+    match r {
+        ACE => "A".to_string(),
+        KING => "K".to_string(),
+        QUEEN => "Q".to_string(),
+        JACK => "J".to_string(),
+        n => n.to_string(),
+    }
+}
+
+fn format_ranks(cards: &[u8]) -> String {
+    cards.iter().map(|&r| format_rank(r)).collect::<Vec<_>>().join(" ")
+}
+
+impl Display for Combination {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Combination::StraightFlush(top_rank) => {
+                write!(f, "Straight Flush of {}", format_rank(*top_rank))
+            }
+            Combination::FourOfKind(quad, kicker) => write!(
+                f,
+                "Four of a Kind of {} with {}",
+                format_rank(*quad),
+                format_rank(*kicker)
+            ),
+            Combination::FullHouse(trip, pair) => write!(
+                f,
+                "Full House of {} and {}",
+                format_rank(*trip),
+                format_rank(*pair)
+            ),
+            Combination::Flush(cards) => write!(f, "Flush of {}", format_ranks(cards)),
+            Combination::Straight(top_rank) => write!(f, "Straight of {}", format_rank(*top_rank)),
+            Combination::ThreeOfKind(trip, kicker) => write!(
+                f,
+                "Three of a Kind of {} with {}",
+                format_rank(*trip),
+                format_ranks(kicker)
+            ),
+            Combination::TwoPair(high_pair, low_pair, kicker) => write!(
+                f,
+                "Two Pair of {} and {} with {}",
+                format_rank(*high_pair),
+                format_rank(*low_pair),
+                format_rank(*kicker)
+            ),
+            Combination::Pair(pair, kicker) => write!(
+                f,
+                "Pair of {} with {}",
+                format_rank(*pair),
+                format_ranks(kicker)
+            ),
+            Combination::HighCard(cards) => write!(f, "High Card of {}", format_ranks(cards)),
         }
     }
 }
