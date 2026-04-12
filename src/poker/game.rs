@@ -1,7 +1,5 @@
-use crate::Card;
-use crate::poker::{Combination, Hand};
-use crate::{ACE, CLUBS, DIAMONDS, HEARTS, JACK, KING, QUEEN, SPADES};
-use rand::rng;
+use super::card::{Card, ACE, CLUBS, DIAMONDS, HEARTS, JACK, KING, QUEEN, SPADES};
+use super::{Combination, Hand};
 use rand::seq::SliceRandom;
 
 #[derive(Debug)]
