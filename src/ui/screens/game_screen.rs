@@ -1,28 +1,47 @@
 use iced::{
-    widget::{column, container, row, text, Space},
+    widget::{button, column, container, row, text, Space},
     Alignment, Background, Border, Element, Fill,
 };
 
-use crate::poker::{Game, Player};
+use crate::poker::{Card, Game, Player};
 use crate::ui::components::card_view::card_chip;
 use crate::ui::theme;
 
+use crate::app::{Command, Message};
+
 /// Root view of the game screen.
 /// Renders the felt table, community cards, all player hands and the winner summary.
-pub fn view<Message: Clone + 'static>(game: &Game) -> Element<'_, Message> {
-    let winners = game.winners();
+pub fn view<'a>(game: &'a Game) -> Element<'a, Message> {
+    let go_back_button = button(text("Go Back")).on_press(Message::BackToHome);
+    let new_game_button = button(text("New Game")).on_press(Message::StartGame);
+    let flop_button = button(text("Flop")).on_press(Message::GameCommand(Command::Flop));
+    let deal_button = button(text("Deal")).on_press(Message::GameCommand(Command::Deal));
+    let turn_button = button(text("Turn")).on_press(Message::GameCommand(Command::Turn));
+    let river_button = button(text("River")).on_press(Message::GameCommand(Command::River));
+
+    let buttons = row![deal_button, flop_button, turn_button, river_button]
+        .spacing(8);
+
+    // show winners only if all cards are dealt
+    let winners = if game.community_cards.len() == 5 {
+        game.winners()
+    } else {
+        vec![]
+    };
     let winner_names: Vec<&str> = winners.iter().map(|(_, p)| p.name.as_str()).collect();
 
     let title = text("♠  POKER  ♣")
         .size(42)
         .color(theme::GOLD);
 
-    let community = community_section(game);
+    let community = community_section(&game.community_cards);
     let players = players_section(&game.players, &winner_names);
     let result = result_section(&winners);
 
     let content = column![
+        row![go_back_button, new_game_button],
         title,
+        buttons,
         Space::new().height(24),
         community,
         Space::new().height(32),
@@ -44,13 +63,13 @@ pub fn view<Message: Clone + 'static>(game: &Game) -> Element<'_, Message> {
         .into()
 }
 
-fn community_section<Message: Clone + 'static>(game: &Game) -> Element<'static, Message> {
+fn community_section<Message: Clone + 'static>(community_cards: &Vec<Card>) -> Element<'static, Message> {
     let label = text("Community Cards")
         .size(15)
         .color(theme::LABEL);
 
     let cards = row(
-        game.community_cards
+        community_cards
             .iter()
             .map(|c| card_chip(*c))
             .collect::<Vec<_>>(),

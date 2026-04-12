@@ -14,7 +14,7 @@ pub struct Deck {
     pub cards: Vec<Card>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Player {
     pub hand: Hand,
     pub name: String,
